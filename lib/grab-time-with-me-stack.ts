@@ -15,6 +15,11 @@ export class GrabTimeWithMeStack extends cdk.Stack {
       }),
     });
 
-    const masterBranch = amplifyApp.addBranch("trunk");
+    const trunk = amplifyApp.addBranch("trunk");
+
+    amplifyApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+
+    const domain = amplifyApp.addDomain('grabtimewith.me');
+    domain.mapRoot(trunk);
   }
 }
