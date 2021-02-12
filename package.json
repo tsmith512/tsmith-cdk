@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-cdk/aws-amplify": "^1.89.0",
+    "@aws-cdk/aws-route53": "^1.89.0",
+    "@aws-cdk/aws-route53-patterns": "^1.89.0",
     "@aws-cdk/core": "1.89.0",
     "source-map-support": "^0.5.16"
   }
