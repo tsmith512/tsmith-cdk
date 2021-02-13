@@ -5,6 +5,14 @@ import * as stacks from '../lib';
 
 const app = new cdk.App();
 
+// Website Asset Storage -- an S3 Bucket that has files like
+// H&Co webfonts packages or resize-required images that get pulled in
+// and processed during site deployments. For now, not using aws-s3-assets
+// because the whole point is keeping them out of project repos. I may
+// change my mind on that later?
+const WebsiteAssets = new stacks.WebsiteAssetStorage(app, 'WebsiteAssetStorageStack');
+
+
 // tsmith.com -- Static Site (Jekyll + Sass/JS/Images) on Amplify
 const TSmithCom = new stacks.TSmithComStack(app, 'TSmithComStack');
 cdk.Tags.of(TSmithCom).add('project', 'tsmithcreative');
