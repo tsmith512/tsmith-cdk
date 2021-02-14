@@ -2,9 +2,10 @@ import * as cdk from '@aws-cdk/core';
 import * as amplify from "@aws-cdk/aws-amplify";
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { HttpsRedirect } from "@aws-cdk/aws-route53-patterns";
+import { AssetStorageConsumerProps } from "./website-asset-storage";
 
 export class StoryPointsInfoStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: AssetStorageConsumerProps) {
     super(scope, id, props);
 
     const amplifyApp = new amplify.App(this, "story-points-info-static-site", {
@@ -16,6 +17,10 @@ export class StoryPointsInfoStack extends cdk.Stack {
         }),
       }),
     });
+
+    // Get the assets folder location and pass it in as an env var to Amplify
+    const assetFolder = props?.assetBucket.bucketRegionalDomainName;
+    assetFolder && amplifyApp.addEnvironment("ASSETS_FOLDER", `https://${assetFolder}/story-points-info`);
 
     const trunk = amplifyApp.addBranch("trunk");
 

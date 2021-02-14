@@ -16,7 +16,7 @@ export class GrabTimeWithMeStack extends cdk.Stack {
       }),
     });
 
-    // See if we can get a URL from the thing. We'll put the HCo zip there.
+    // Get the assets folder location and pass it in as an env var to Amplify
     const assetFolder = props?.assetBucket.bucketRegionalDomainName;
     assetFolder && amplifyApp.addEnvironment("ASSETS_FOLDER", `https://${assetFolder}/grab-time-with-me`);
 
