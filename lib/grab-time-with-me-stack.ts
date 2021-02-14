@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import * as amplify from "@aws-cdk/aws-amplify";
+import { AssetStorageConsumerProps } from "./website-asset-storage";
 
 export class GrabTimeWithMeStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: AssetStorageConsumerProps) {
     super(scope, id, props);
 
     const amplifyApp = new amplify.App(this, "grab-time-with-me-spa", {
@@ -14,6 +15,10 @@ export class GrabTimeWithMeStack extends cdk.Stack {
         }),
       }),
     });
+
+    // See if we can get a URL from the thing. We'll put the HCo zip there.
+    const assetFolder = props?.assetBucket.bucketRegionalDomainName;
+    assetFolder && amplifyApp.addEnvironment("ASSETS_FOLDER", `https://${assetFolder}/grab-time-with-me`);
 
     const trunk = amplifyApp.addBranch("trunk");
 

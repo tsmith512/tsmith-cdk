@@ -13,11 +13,13 @@ export class WebsiteAssetStorage extends cdk.Stack {
     const s3bucket = new s3.Bucket(this, 'WebsiteAssetStorage', {
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      publicReadAccess: true,
     });
     this.theBucket = s3bucket;
   }
 
 }
-// interface ConsumerProps extends cdk.StackProps {
-//   assetBucket: s3.IBucket;
-// }
+
+export interface AssetStorageConsumerProps extends cdk.StackProps {
+  assetBucket: s3.IBucket;
+}

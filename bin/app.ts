@@ -18,7 +18,9 @@ const TSmithCom = new stacks.TSmithComStack(app, 'TSmithComStack');
 cdk.Tags.of(TSmithCom).add('project', 'tsmithcreative');
 
 // grabtimewith.me -- React SPA on Amplify
-const GrabTimeWithMe = new stacks.GrabTimeWithMeStack(app, 'GrabTimeWithMeStack');
+const GrabTimeWithMe = new stacks.GrabTimeWithMeStack(app, 'GrabTimeWithMeStack', {
+  assetBucket: WebsiteAssets.theBucket
+});
 cdk.Tags.of(GrabTimeWithMe).add('project', 'experiments');
 
 // storypoints.info -- Static Site (HTML + Sass) on Amplify
