@@ -1,5 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import * as amplify from "@aws-cdk/aws-amplify";
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as path from 'path';
 import { BasicAuth, RedirectStatus } from '@aws-cdk/aws-amplify';
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { HttpsRedirect } from "@aws-cdk/aws-route53-patterns";
@@ -7,8 +10,30 @@ import { AssetStorageConsumerProps } from "./website-asset-storage";
 
 
 export class TSmithComStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: AssetStorageConsumerProps) {
+  constructor(scope: cdk.Construct, id: string, props: AssetStorageConsumerProps) {
     super(scope, id, props);
+
+    // Define the lambda function that handles the contact form. Doing this
+    // first so we can give the endpoint URL to Amplify by env var.
+    const emailHandler = new lambda.Function(this, 'tsmith-com-emailhandler', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromBucket(props?.assetBucket, 'tsmith-com/contact-form.zip')
+    });
+
+    // And give that lambda function permission to send me emails
+    const emailSendingPolicy = new iam.Policy(this, 'tsmith-com-emailhandler-policy');
+    emailSendingPolicy.addStatements(iam.PolicyStatement.fromJson({
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }));
+    emailHandler.role && emailHandler.role.attachInlinePolicy(emailSendingPolicy)
+
 
     const amplifyApp = new amplify.App(this, "tsmith-com-static-site", {
       sourceCodeProvider: new amplify.GitHubSourceCodeProvider({

@@ -40,3 +40,4 @@ because that's more fun than cleaning up my room.
 - Route 53 zones
 - Secrets Manager
 - Home Assistant / Haaska bridge
+- SES Verifications (verify sending domain and address) _in `us-east-2`_
