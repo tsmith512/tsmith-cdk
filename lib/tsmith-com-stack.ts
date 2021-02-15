@@ -21,8 +21,8 @@ export class TSmithComStack extends cdk.Stack {
     });
 
     // Get the assets folder location and pass it in as an env var to Amplify
-    const assetFolder = props?.assetBucket.bucketRegionalDomainName;
-    assetFolder && amplifyApp.addEnvironment("ASSETS_FOLDER", `https://${assetFolder}/tsmith-com`);
+    const assetFolder = props.assetBucket.bucketRegionalDomainName;
+    amplifyApp.addEnvironment("ASSETS_FOLDER", `https://${assetFolder}/tsmith-com`);
 
     const trunk = amplifyApp.addBranch("trunk");
 
