@@ -8,7 +8,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "lint": "eslint . --ext .ts",
+    "lint-lambda": "eslint lambda --ext .js,.ts"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.89.0",
@@ -29,6 +31,7 @@
     "@aws-cdk/aws-route53-patterns": "^1.89.0",
     "@aws-cdk/aws-s3": "^1.89.0",
     "@aws-cdk/core": "1.89.0",
+    "@verypossible/eslint-config": "^1.0.2",
     "source-map-support": "^0.5.16"
   }
 }
