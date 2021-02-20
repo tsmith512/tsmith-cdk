@@ -1,8 +1,9 @@
+import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import * as amplify from "@aws-cdk/aws-amplify";
+import * as apigateway from "@aws-cdk/aws-apigateway";
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as path from 'path';
 import { BasicAuth, RedirectStatus } from '@aws-cdk/aws-amplify';
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { HttpsRedirect } from "@aws-cdk/aws-route53-patterns";
@@ -13,12 +14,26 @@ export class TSmithComStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: AssetStorageConsumerProps) {
     super(scope, id, props);
 
+    const amplifyApp = new amplify.App(this, "tsmith-com-static-site", {
+      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+        owner: "tsmith512",
+        repository: "tsmithcreative",
+        oauthToken: cdk.SecretValue.secretsManager("github-oauth-token", {
+          jsonField: "secret",
+        }),
+      }),
+    });
+
     // Define the lambda function that handles the contact form. Doing this
     // first so we can give the endpoint URL to Amplify by env var.
     const emailHandler = new lambda.Function(this, 'tsmith-com-emailhandler', {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
-      code: lambda.Code.fromBucket(props?.assetBucket, 'tsmith-com/contact-form.zip')
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/tsmith-com-emailhandler')),
+      environment: {
+        EMAIL_DESTINATION: cdk.SecretValue.secretsManager("github-oauth-token", { jsonField: "email-form-destination" }).toString(),
+        EMAIL_SOURCE: cdk.SecretValue.secretsManager("github-oauth-token", { jsonField: "email-form-source" }).toString(),
+      }
     });
 
     // And give that lambda function permission to send me emails
@@ -34,16 +49,22 @@ export class TSmithComStack extends cdk.Stack {
     }));
     emailHandler.role && emailHandler.role.attachInlinePolicy(emailSendingPolicy)
 
-
-    const amplifyApp = new amplify.App(this, "tsmith-com-static-site", {
-      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-        owner: "tsmith512",
-        repository: "tsmithcreative",
-        oauthToken: cdk.SecretValue.secretsManager("github-oauth-token", {
-          jsonField: "secret",
-        }),
-      }),
+    const apiEndpoint = new apigateway.LambdaRestApi(this, 'tsmith-com-emailapi', {
+      handler: emailHandler,
+      proxy: false,
+      deploy: true,
+      deployOptions: {
+        stageName: "tsmith-com-email"
+      },
     });
+
+    apiEndpoint.root.addMethod("POST");
+    apiEndpoint.root.addCorsPreflight({
+      allowOrigins: apigateway.Cors.ALL_ORIGINS,
+      allowMethods: ['POST']
+    })
+
+    amplifyApp.addEnvironment("EMAIL_HANDLER_ENDPOINT", apiEndpoint.url);
 
     // Get the assets folder location and pass it in as an env var to Amplify
     const assetFolder = props.assetBucket.bucketRegionalDomainName;

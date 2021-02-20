@@ -8,11 +8,14 @@ export class WebsiteAssetStorage extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // @TODO: Once this is set up and working, set to false/RETAIN
-    // so these don't get blown away accidentally and break builds.
+    // This bucket is full of manually uploaded stuff. One time, I had CDK
+    // actually put something there and when I removed that object. CDK tried to
+    // deprovision the whole bucket. Turning on RETAIN and off autoDeleteObjects
+    // should prevent this, but I'm worried the bucket might get reprovisioned
+    // and the new referenced passed around would be an empty bucket...
     const s3bucket = new s3.Bucket(this, 'WebsiteAssetStorage', {
-      autoDeleteObjects: true,
-      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: false,
+      removalPolicy: RemovalPolicy.RETAIN,
       publicReadAccess: true,
     });
     this.theBucket = s3bucket;

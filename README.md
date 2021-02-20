@@ -38,6 +38,15 @@ because that's more fun than cleaning up my room.
 
 - Domain reigstration
 - Route 53 zones
-- Secrets Manager
 - Home Assistant / Haaska bridge
 - SES Verifications (verify sending domain and address) _in `us-east-2`_
+- Secrets Manager. Create this:
+
+A secret called `github-oauth-token` in Ohio with these JSON fields:
+
+| Field | Value |
+| ----- | ----- |
+| `secret` | GitHub application token with the repo scope on @tsmith512 |
+| `basicAuthPassword` | Whatever plaintext password for staging environments |
+| `email-form-destination` | My email address for sending contact form replies |
+| `email-form-source` | Webmaster/no-reply for addressing contact form replies |
