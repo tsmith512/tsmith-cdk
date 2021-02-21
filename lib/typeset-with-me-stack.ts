@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from "@aws-cdk/core";
 import * as amplify from "@aws-cdk/aws-amplify";
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { HttpsRedirect } from "@aws-cdk/aws-route53-patterns";
@@ -19,10 +19,10 @@ export class TypesetWithMeStack extends cdk.Stack {
 
     const trunk = amplifyApp.addBranch("trunk");
 
-    const domain = amplifyApp.addDomain('typesetwith.me');
+    const domain = amplifyApp.addDomain("typesetwith.me");
     domain.mapRoot(trunk);
 
-    const wwwRedirect = new HttpsRedirect(this, "typset-with-me-domain-direct", {
+    new HttpsRedirect(this, "typset-with-me-domain-direct", {
       targetDomain: "typesetwith.me",
       zone: HostedZone.fromHostedZoneAttributes(this, "typesetwithme-zone", {
         hostedZoneId: "Z6GVTYNW5861O",
