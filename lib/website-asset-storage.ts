@@ -13,14 +13,13 @@ export class WebsiteAssetStorage extends cdk.Stack {
     // deprovision the whole bucket. Turning on RETAIN and off autoDeleteObjects
     // should prevent this, but I'm worried the bucket might get reprovisioned
     // and the new referenced passed around would be an empty bucket...
-    const s3bucket = new s3.Bucket(this, 'WebsiteAssetStorage', {
+    const s3bucket = new s3.Bucket(this, "WebsiteAssetStorage", {
       autoDeleteObjects: false,
       removalPolicy: RemovalPolicy.RETAIN,
       publicReadAccess: true,
     });
     this.theBucket = s3bucket;
   }
-
 }
 
 export interface AssetStorageConsumerProps extends cdk.StackProps {
