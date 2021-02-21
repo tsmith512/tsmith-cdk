@@ -35,7 +35,7 @@ exports.handler = (event, context, callback) => {
   console.log("Received event:", JSON.stringify(event));
   sendEmail(event, (err, data) => {
     callback(err, {
-      sBase64Encoded: false,
+      isBase64Encoded: false,
       statusCode: err ? 500 : 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
